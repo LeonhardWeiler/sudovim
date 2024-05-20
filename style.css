@@ -1,0 +1,96 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  font-size: 1.5rem;
+  width: 100%;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+}
+
+.sudoku {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+}
+
+.sudoku__cell {
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  padding: 0.7rem;
+  aspect-ratio: 1;
+  border-bottom: 1px solid;
+  border-right: 1px solid;
+  user-select: none;
+
+  &:hover {
+    background-color: lightpink;
+  }
+}
+
+.sudoku__cell:nth-of-type(9n+1) {
+  border-left: 1px solid;
+}
+
+.sudoku__cell:nth-of-type(-n+9) {
+  border-top: 1px solid;
+}
+
+.sudoku__cell:nth-of-type(3n):not(:nth-of-type(9n)) {
+  border-right: 2px solid;
+}
+
+.sudoku__cell:nth-of-type(n+19):nth-of-type(-n+27),
+.sudoku__cell:nth-of-type(n+46):nth-of-type(-n+54) {
+  border-bottom: 2px solid;
+}
+
+.difficulty,
+.controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.btn {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: 1px solid;
+  cursor: pointer;
+  background-color: transparent;
+  font-size: 1rem;
+
+  &:hover {
+    outline: 1px solid;
+  }
+}
+
+.solved {
+  background-color: lightgreen;
+}
+
+.highlight {
+  background-color: lightblue !important;
+}
+
+.edited {
+  background-color: lightyellow;
+}
+
+@media print {
+  .difficulty,
+  .controls {
+    display: none;
+  }
+}
