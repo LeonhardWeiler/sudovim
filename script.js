@@ -7,6 +7,7 @@ function possible(y, x, n, grid) {
 
   const subgridStartX = Math.floor(x / 3) * 3;
   const subgridStartY = Math.floor(y / 3) * 3;
+
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 3; j++) {
       if (grid[subgridStartY + i][subgridStartX + j] === n) {
@@ -14,7 +15,6 @@ function possible(y, x, n, grid) {
       }
     }
   }
-
   return true;
 }
 
@@ -89,7 +89,11 @@ function createSudokuGridHTML(grid) {
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
       const cellValue = grid[i][j] === 0 ? '' : grid[i][j];
+      if (cellValue === '') {
+        html += `<div class="sudoku__cell editable"></div>`;
+      } else {
       html += `<div class="sudoku__cell">${cellValue}</div>`;
+      }
     }
   }
   return html;
@@ -150,6 +154,9 @@ function solveSudokuGrid() {
   }
 }
 
+let currentRow = 0;
+let currentCol = 0;
+
 document.querySelector("#solve").addEventListener("click", solveSudokuGrid);
 
 document.querySelector('.sudoku').addEventListener('click', event => {
@@ -162,20 +169,45 @@ document.querySelector('.sudoku').addEventListener('click', event => {
         cell.classList.remove('highlight');
       });
       clickedCell.classList.add('highlight');
+      const index = Array.from(document.querySelectorAll('.sudoku__cell')).indexOf(clickedCell);
+      currentRow = Math.floor(index / 9);
+      currentCol = index % 9;
     }
   }
 });
 
 document.addEventListener('keydown', event => {
   const highlightedCell = document.querySelector('.sudoku__cell.highlight');
-  if (highlightedCell) {
-    const key = parseInt(event.key);
-    if (!isNaN(key) && key >= 1 && key <= 9) {
-      if (highlightedCell.textContent.trim() === '' || highlightedCell.classList.contains('edited')) {
-        highlightedCell.textContent = key;
-        highlightedCell.classList.add('edited');
-      }
+  if (!highlightedCell) return;
+
+  const key = event.key;
+  const sudokuCells = document.querySelectorAll('.sudoku__cell');
+
+  if (key === 'h' && currentCol > 0) {
+    currentCol--;
+  } else if (key === 'j' && currentRow < 8) {
+    currentRow++;
+  } else if (key === 'k' && currentRow > 0) {
+    currentRow--;
+  } else if (key === 'l' && currentCol < 8) {
+    currentCol++;
+  } else if (!isNaN(key) && key >= 1 && key <= 9) {
+    if (highlightedCell.classList.contains('editable')) {
+      highlightedCell.textContent = key;
+      highlightedCell.classList.add('edited');
     }
+    return;
+  } else if (key === 'Backspace' || key === 'Delete') {
+    if (highlightedCell.classList.contains('editable')) {
+      highlightedCell.textContent = '';
+      highlightedCell.classList.remove('edited');
+    }
+    return;
   }
+
+  sudokuCells.forEach(cell => cell.classList.remove('highlight'));
+  const newIndex = currentRow * 9 + currentCol;
+  sudokuCells[newIndex].classList.add('highlight');
 });
+
 

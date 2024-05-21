@@ -33,10 +33,6 @@ body {
   border-bottom: 1px solid;
   border-right: 1px solid;
   user-select: none;
-
-  &:hover {
-    background-color: lightpink;
-  }
 }
 
 .sudoku__cell:nth-of-type(9n+1) {
@@ -92,5 +88,17 @@ body {
   .difficulty,
   .controls {
     display: none;
+  }
+
+  .solved {
+    background-color: transparent;
+  }
+
+  .highlight {
+    background-color: transparent;
+  }
+
+  .edited {
+    background-color: transparent;
   }
 }
