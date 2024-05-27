@@ -24,11 +24,16 @@ body {
   grid-template-rows: repeat(9, 1fr);
 }
 
+.sudoku__cell:not(.editable),
+.edited,
+.solved {
+  text-align: center;
+  align-content: center;
+}
+
 .sudoku__cell {
-  display: grid;
-  place-items: center;
   cursor: pointer;
-  padding: 0.7rem;
+  width: 3.5rem;
   aspect-ratio: 1;
   border-bottom: 1px solid;
   border-right: 1px solid;

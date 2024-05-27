@@ -85,47 +85,66 @@ function createSudokuGrid(difficulty) {
 }
 
 function createSudokuGridHTML(grid) {
-  let html = '';
-  for (let i = 0; i < 9; i++) {
-    for (let j = 0; j < 9; j++) {
-      const cellValue = grid[i][j] === 0 ? '' : grid[i][j];
-      if (cellValue === '') {
-        html += `<div class="sudoku__cell editable"></div>`;
-      } else {
-      html += `<div class="sudoku__cell">${cellValue}</div>`;
-      }
+  const sudokuCells = document.querySelectorAll('.sudoku__cell');
+  const middleCellIndex = 40;
+  sudokuCells.forEach((cell, index) => {
+    const row = Math.floor(index / 9);
+    const col = index % 9;
+    const cellValue = grid[row][col];
+    cell.textContent = cellValue === 0 ? '' : cellValue;
+    if (cellValue === 0) {
+      cell.classList.add('editable');
+    } else {
+      cell.classList.remove('editable');
     }
-  }
-  return html;
+  });
+  sudokuCells[middleCellIndex].classList.add('highlight');
 }
 
 function updateSudokuGrid(difficulty) {
   const sudokuGrid = createSudokuGrid(difficulty);
-  const sudokuGridHTML = createSudokuGridHTML(sudokuGrid);
-  document.querySelector(".sudoku").innerHTML = sudokuGridHTML;
+  createSudokuGridHTML(sudokuGrid);
+  clearColors();
+  resetCursor();
   localStorage.setItem('sudokuDifficulty', difficulty);
 }
 
 const lastDifficulty = localStorage.getItem('sudokuDifficulty') || 'medium';
 
-window.addEventListener('load', () => {
-  updateSudokuGrid(lastDifficulty);
-});
-
+window.addEventListener('load', () => updateSudokuGrid(lastDifficulty));
 document.querySelector("#easy").addEventListener("click", () => updateSudokuGrid('easy'));
-
 document.querySelector("#medium").addEventListener("click", () => updateSudokuGrid('medium'));
-
 document.querySelector("#hard").addEventListener("click", () => updateSudokuGrid('hard'));
-
 document.querySelector("#very-hard").addEventListener("click", () => updateSudokuGrid('very-hard'));
+document.querySelector("#clear").addEventListener("click", () => clearSudokuGrid());
+document.querySelector("#solve").addEventListener("click", solveSudokuGrid);
+document.addEventListener('keydown', event => cursorHighlight(event));
 
-document.querySelector("#clear").addEventListener("click", () => {
-  if (originalSudokuGrid) {
-    const sudokuGridHTML = createSudokuGridHTML(originalSudokuGrid);
-    document.querySelector(".sudoku").innerHTML = sudokuGridHTML;
+function resetCursor() {
+  currentRow = 4;
+  currentCol = 4;
+  document.querySelectorAll('.sudoku__cell').forEach(cell => {
+    cell.classList.remove('highlight');
+  });
+  document.querySelectorAll('.sudoku__cell')[currentRow * 9 + currentCol].classList.add('highlight');
+}
+
+function clearColors() {
+  const sudokuCells = document.querySelectorAll('.solved');
+  const editedCells = document.querySelectorAll('.edited');
+  sudokuCells.forEach(cell => cell.classList.remove('solved'));
+  editedCells.forEach(cell => cell.classList.remove('edited'));
+}
+
+function clearSudokuGrid() {
+  const sudokuCells = document.querySelectorAll('.solved');
+  if (sudokuCells.length > 0) {
+    sudokuCells.forEach(cell => {
+      cell.textContent = '';
+      cell.classList.remove('solved');
+    });
   }
-});
+}
 
 function solveSudokuGrid() {
   const sudokuCells = document.querySelectorAll('.sudoku__cell');
@@ -150,38 +169,17 @@ function solveSudokuGrid() {
       }
     }
   } else {
-    return false;
+    alert('sudoku is wrong!');
   }
 }
 
-let currentRow = 0;
-let currentCol = 0;
+let currentRow = 4;
+let currentCol = 4;
 
-document.querySelector("#solve").addEventListener("click", solveSudokuGrid);
-
-document.querySelector('.sudoku').addEventListener('click', event => {
-  const clickedCell = event.target.closest('.sudoku__cell');
-  if (clickedCell) {
-    if (clickedCell.classList.contains('highlight')) {
-      clickedCell.classList.remove('highlight');
-    } else {
-      document.querySelectorAll('.sudoku__cell').forEach(cell => {
-        cell.classList.remove('highlight');
-      });
-      clickedCell.classList.add('highlight');
-      const index = Array.from(document.querySelectorAll('.sudoku__cell')).indexOf(clickedCell);
-      currentRow = Math.floor(index / 9);
-      currentCol = index % 9;
-    }
-  }
-});
-
-document.addEventListener('keydown', event => {
-  const highlightedCell = document.querySelector('.sudoku__cell.highlight');
-  if (!highlightedCell) return;
-
-  const key = event.key;
+function cursorHighlight(event) {
+  const highlightedCell = document.querySelector('.highlight');
   const sudokuCells = document.querySelectorAll('.sudoku__cell');
+  const key = event.key;
 
   if (key === 'h' && currentCol > 0) {
     currentCol--;
@@ -191,23 +189,15 @@ document.addEventListener('keydown', event => {
     currentRow--;
   } else if (key === 'l' && currentCol < 8) {
     currentCol++;
-  } else if (!isNaN(key) && key >= 1 && key <= 9) {
-    if (highlightedCell.classList.contains('editable')) {
+  } else if (!isNaN(key) && key >= 1 && key <= 9 && highlightedCell.classList.contains('editable')) {
       highlightedCell.textContent = key;
       highlightedCell.classList.add('edited');
-    }
-    return;
-  } else if (key === 'Backspace' || key === 'Delete') {
-    if (highlightedCell.classList.contains('editable')) {
+  } else if ((key === 'Backspace' || key === 'Delete' || key === 'x') && highlightedCell.classList.contains('editable')) {
       highlightedCell.textContent = '';
       highlightedCell.classList.remove('edited');
-    }
-    return;
   }
 
-  sudokuCells.forEach(cell => cell.classList.remove('highlight'));
   const newIndex = currentRow * 9 + currentCol;
+  highlightedCell.classList.remove('highlight');
   sudokuCells[newIndex].classList.add('highlight');
-});
-
-
+}
