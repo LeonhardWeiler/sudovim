@@ -22,6 +22,7 @@ body {
   display: grid;
   grid-template-columns: repeat(9, 1fr);
   grid-template-rows: repeat(9, 1fr);
+  cursor: pointer;
 }
 
 .sudoku__cell:not(.editable),
@@ -32,7 +33,6 @@ body {
 }
 
 .sudoku__cell {
-  cursor: pointer;
   width: 3.5rem;
   aspect-ratio: 1;
   border-bottom: 1px solid;
@@ -82,7 +82,15 @@ body {
 }
 
 .highlight {
-  background-color: lightblue !important;
+  background-color: lightsteelblue !important;
+}
+
+.similar {
+  background-color: lightsteelblue;
+}
+
+.highlight-line {
+  background-color: lightblue;
 }
 
 .edited {
@@ -95,15 +103,11 @@ body {
     display: none;
   }
 
-  .solved {
-    background-color: transparent;
-  }
-
-  .highlight {
-    background-color: transparent;
-  }
-
-  .edited {
+  .solved,
+  .highlight,
+  .edited,
+  .highlight-line,
+  .similar {
     background-color: transparent;
   }
 }
