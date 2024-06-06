@@ -25,14 +25,16 @@ body {
   cursor: pointer;
 }
 
-.sudoku__cell:not(.editable),
+.cell:not(.editable),
 .edited,
-.solved {
+.solved,
+.wrong,
+.empty {
   text-align: center;
   align-content: center;
 }
 
-.sudoku__cell {
+.cell {
   width: 3.5rem;
   aspect-ratio: 1;
   border-bottom: 1px solid;
@@ -40,20 +42,20 @@ body {
   user-select: none;
 }
 
-.sudoku__cell:nth-of-type(9n+1) {
+.cell:nth-of-type(9n+1) {
   border-left: 1px solid;
 }
 
-.sudoku__cell:nth-of-type(-n+9) {
+.cell:nth-of-type(-n+9) {
   border-top: 1px solid;
 }
 
-.sudoku__cell:nth-of-type(3n):not(:nth-of-type(9n)) {
+.cell:nth-of-type(3n):not(:nth-of-type(9n)) {
   border-right: 2px solid;
 }
 
-.sudoku__cell:nth-of-type(n+19):nth-of-type(-n+27),
-.sudoku__cell:nth-of-type(n+46):nth-of-type(-n+54) {
+.cell:nth-of-type(n+19):nth-of-type(-n+27),
+.cell:nth-of-type(n+46):nth-of-type(-n+54) {
   border-bottom: 2px solid;
 }
 
@@ -77,25 +79,14 @@ body {
   }
 }
 
-.solved {
-  background-color: lightgreen;
-}
-
-.highlight {
-  background-color: lightsteelblue !important;
-}
-
-.similar {
-  background-color: lightsteelblue;
-}
-
-.highlight-line {
-  background-color: lightblue;
-}
-
-.edited {
-  background-color: lightyellow;
-}
+.similar{background-color: lightsteelblue}
+.highlight-line{background-color: lightblue}
+.edited{background-color: lightyellow}
+.highlight{background-color: lightsteelblue}
+.wrong{background-color: lightcoral}
+.solved{background-color: lightgreen}
+.original{background-color: lightgray}
+.empty{background-color: lightyellow}
 
 @media print {
   .difficulty,
@@ -107,7 +98,8 @@ body {
   .highlight,
   .edited,
   .highlight-line,
-  .similar {
+  .similar,
+  .wrong {
     background-color: transparent;
   }
 }
