@@ -95,8 +95,8 @@ body {
     place-items: center;
 
     .box-center {
-      width: 7px;
-      height: 7px;
+      width: 8px;
+      height: 8px;
       background-color: hsl(0, 0%, 0%);
     }
   }
