@@ -1,6 +1,10 @@
 const lastDifficulty = localStorage.getItem("sudokuDifficulty") || "medium";
+let showLines = localStorage.getItem("showLines") || "true";
 
 window.addEventListener("load", () => updateSudokuGrid(lastDifficulty));
+document
+  .querySelector(".toggle-lines")
+  .addEventListener("click", () => toggleLines());
 document
   .querySelector("#easy")
   .addEventListener("click", () => updateSudokuGrid("easy"));
@@ -15,7 +19,7 @@ document
   .addEventListener("click", () => updateSudokuGrid("very-hard"));
 document
   .querySelector("#clear")
-  .addEventListener("click", () => clearSudokuGrid());
+  .addEventListener("click", () => clearSudokuGrid(showLines));
 document.querySelector("#solve").addEventListener("click", solveSudokuGrid);
 document.addEventListener("keydown", (event) => cursorHighlight(event));
 
@@ -25,7 +29,7 @@ let currentCol;
 
 function updateSudokuGrid(difficulty) {
   createSudokuGridHTML(difficulty);
-  resetSudoku();
+  resetSudoku(showLines);
   localStorage.setItem("sudokuDifficulty", difficulty);
 }
 
@@ -88,9 +92,9 @@ function createSudokuGrid(difficulty) {
   originalSudokuGrid = JSON.parse(JSON.stringify(grid));
 
   const difficultyMap = {
-    "easy": 30,
-    "medium": 40,
-    "hard": 50,
+    easy: 30,
+    medium: 40,
+    hard: 50,
     "very-hard": 60,
   };
 
@@ -132,11 +136,14 @@ function createSudokuGridHTML(difficulty) {
   });
 }
 
-function resetSudoku() {
+function resetSudoku(showLines) {
   resetCursor();
   clearColors();
   highlightSimilar();
-  highlightLines();
+  if (showLines === "true") {
+    highlightLines();
+  }
+  toggleButtonCenter(showLines);
 }
 
 function resetCursor() {
@@ -207,21 +214,23 @@ function highlightLines() {
   });
 }
 
-function clearSudokuGrid() {
+function clearSudokuGrid(showLines) {
   document.querySelectorAll(".cell").forEach((cell) => {
     if (cell.classList.contains("editable")) {
       cell.textContent = "";
     }
   });
-  clearColors();
-  highlightSimilar();
-  resetSudoku();
+  resetSudoku(showLines);
 }
 
 function solveSudokuGrid() {
   const sudokuCells = document.querySelectorAll(".cell");
-  document.querySelectorAll(".similar").forEach((cell) => {cell.classList.remove("similar")});
-  document.querySelectorAll(".highlight-line").forEach((cell) => {cell.classList.remove("highlight-line")});
+  document.querySelectorAll(".similar").forEach((cell) => {
+    cell.classList.remove("similar");
+  });
+  document.querySelectorAll(".highlight-line").forEach((cell) => {
+    cell.classList.remove("highlight-line");
+  });
   document.querySelector(".highlight").classList.remove("highlight");
 
   sudokuCells.forEach((cell) => {
@@ -274,9 +283,37 @@ function cursorHighlight(event) {
 
   const newIndex = currentRow * 9 + currentCol;
   highlightedCell.classList.remove("highlight");
-  document
-    .querySelectorAll(".cell")
-    [newIndex].classList.add("highlight");
+  document.querySelectorAll(".cell")[newIndex].classList.add("highlight");
   highlightSimilar();
-  highlightLines();
+  if (showLines === "true") {
+    highlightLines();
+  }
+}
+
+function toggleLines() {
+  const button = document.querySelector(".box");
+  const lines = document.querySelectorAll(".highlight-line");
+
+  if (button.childNodes.length > 0) {
+    showLines = "false";
+    toggleButtonCenter(showLines);
+    lines.forEach((line) => line.classList.remove("highlight-line"));
+    localStorage.setItem("showLines", showLines);
+  } else {
+    showLines = "true";
+    toggleButtonCenter(showLines);
+    localStorage.setItem("showLines", showLines);
+  }
+}
+
+function toggleButtonCenter(showLines) {
+  const button = document.querySelector(".box");
+  if (showLines === "true" && button.childNodes.length === 0) {
+    const center = document.createElement("div");
+    center.classList.add("box-center");
+    button.appendChild(center);
+    highlightLines();
+  } else if (showLines === "false" && button.childNodes.length > 0) {
+    button.removeChild(button.firstChild);
+  }
 }
