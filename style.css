@@ -6,9 +6,7 @@
   padding: 0;
 }
 
-html {
-  color-scheme: light;
-}
+html {color-scheme: light}
 
 body {
   font-size: 1.5rem;
@@ -17,12 +15,60 @@ body {
   display: grid;
   place-items: center;
   user-select: none;
+  font-family: Arial;
 }
 
 .sudoku {
   display: grid;
   grid-template-columns: repeat(9, 1fr);
   grid-template-rows: repeat(9, 1fr);
+  font-family: Times New Roman;
+}
+
+.cell {
+  text-align: center;
+  align-content: center;
+  width: 3.5rem;
+  aspect-ratio: 1;
+  border-bottom: 1px solid;
+  border-right: 1px solid;
+}
+
+.cell:nth-of-type(9n+1) {border-left: 1px solid}
+.cell:nth-of-type(-n+9) {border-top: 1px solid}
+.cell:nth-of-type(3n):not(:nth-of-type(9n)) {border-right: 2px solid}
+
+.cell:nth-of-type(n+19):nth-of-type(-n+27),
+.cell:nth-of-type(n+46):nth-of-type(-n+54) {
+  border-bottom: 2px solid;
+}
+
+.similar {background-color: hsl(180, 100%, 90%)}
+.highlight-line {background-color: hsl(197, 52%, 80%)}
+.edited, .empty {background-color: hsl(62, 100%, 90%)}
+.highlight {background-color: hsl(217, 40%, 75%)}
+.wrong {background-color: hsl(1, 74%, 75%)}
+.solved {background-color: hsl(120, 75%, 75%)}
+.original {background-color: hsl(0, 0%, 85%)}
+
+.btn {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: 1px solid;
+  cursor: pointer;
+  background-color: transparent;
+  font-size: 1rem;
+
+  &:hover {
+    outline: 1px solid;
+  }
+}
+
+.difficulty,
+.controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
 }
 
 .toggle-lines {
@@ -51,7 +97,7 @@ body {
     .box-center {
       width: 7px;
       height: 7px;
-      background-color: black;
+      background-color: hsl(0, 0%, 0%);
     }
   }
 
@@ -60,68 +106,6 @@ body {
     place-items: center;
   }
 }
-
-.cell:not(.editable),
-.edited,
-.solved,
-.wrong,
-.empty {
-  text-align: center;
-  align-content: center;
-}
-
-.cell {
-  width: 3.5rem;
-  aspect-ratio: 1;
-  border-bottom: 1px solid;
-  border-right: 1px solid;
-}
-
-.cell:nth-of-type(9n+1) {
-  border-left: 1px solid;
-}
-
-.cell:nth-of-type(-n+9) {
-  border-top: 1px solid;
-}
-
-.cell:nth-of-type(3n):not(:nth-of-type(9n)) {
-  border-right: 2px solid;
-}
-
-.cell:nth-of-type(n+19):nth-of-type(-n+27),
-.cell:nth-of-type(n+46):nth-of-type(-n+54) {
-  border-bottom: 2px solid;
-}
-
-.difficulty,
-.controls {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-.btn {
-  flex: 1;
-  padding: 0.5rem 1rem;
-  border: 1px solid;
-  cursor: pointer;
-  background-color: transparent;
-  font-size: 1rem;
-
-  &:hover {
-    outline: 1px solid;
-  }
-}
-
-.similar{background-color: lightcyan}
-.highlight-line{background-color: lightblue}
-.edited{background-color: lightyellow}
-.highlight{background-color: lightsteelblue}
-.wrong{background-color: lightcoral}
-.solved{background-color: lightgreen}
-.original{background-color: lightgray}
-.empty{background-color: lightyellow}
 
 @media print {
   .difficulty,
@@ -137,5 +121,15 @@ body {
   .original,
   .empty {
     background-color: transparent;
+  }
+}
+
+@media (max-width: 630px) {
+  .toggle-lines {
+    display: none;
+  }
+
+  .sudoku, .difficulty, .controls {
+    margin-inline: 1rem;
   }
 }
