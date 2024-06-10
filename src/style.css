@@ -79,20 +79,20 @@ body {
 
   &:hover {
     .box {
-      outline: 1px solid;
+      outline: 2px solid;
     }
   }
 
   .box {
     width: 12px;
-    height: 12px;
-    border: 1px solid;
+    aspect-ratio: 1;
+    outline: 1px solid;
     display: grid;
     place-items: center;
 
     .box-center {
-      width: 8px;
-      height: 8px;
+      width: 70%;
+      aspect-ratio: 1;
       background-color: hsl(0, 0%, 0%);
     }
   }

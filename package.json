@@ -6,7 +6,7 @@
   "scripts": {
     "minify-html": "html-minifier-terser src/index.html --collapse-whitespace --output=build/index.html",
     "optimize-css": "postcss src/style.css --use autoprefixer cssnano postcss-pxtorem --output build/style.css --no-map",
-    "minify-js": "uglifyjs src/script.js --compress -o build/script.js",
+    "minify-js": "uglifyjs src/script.js -o build/script.js",
     "build": "npm run minify-html && npm run optimize-css && npm run minify-js"
   },
   "keywords": [],
