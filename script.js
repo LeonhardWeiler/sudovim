@@ -259,8 +259,6 @@ function reactToKey(event, showLines) {
 
   if (key === "c") {
     clearSudokuGrid(showLines);
-  } else if (key === "g") {
-    toggleLines();
   } else if (["a", "s", "d", "f"].includes(key)) {
     updateSudokuGrid(keyToDifficulty[key], showLines);
   }
@@ -284,6 +282,8 @@ function reactToKey(event, showLines) {
     highlightSimilar();
   } else if (key === "Enter") {
     solveSudokuGrid();
+  } else if (key === "g") {
+    toggleLines();
   }
 }
 
