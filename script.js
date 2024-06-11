@@ -2,38 +2,29 @@ const lastDifficulty = localStorage.getItem("sudokuDifficulty") || "medium";
 let showLines = localStorage.getItem("showLines") || "true";
 
 window.addEventListener("load", () => updateSudokuGrid(lastDifficulty));
-document
-  .querySelector(".toggle-lines")
-  .addEventListener("click", () => toggleLines());
-document
-  .querySelector("#easy")
-  .addEventListener("click", () => updateSudokuGrid("easy"));
-document
-  .querySelector("#medium")
-  .addEventListener("click", () => updateSudokuGrid("medium"));
-document
-  .querySelector("#hard")
-  .addEventListener("click", () => updateSudokuGrid("hard"));
-document
-  .querySelector("#very-hard")
-  .addEventListener("click", () => updateSudokuGrid("very-hard"));
-document
-  .querySelector("#clear")
-  .addEventListener("click", () => clearSudokuGrid(showLines));
-document.querySelector("#solve").addEventListener("click", solveSudokuGrid);
-document.addEventListener("keydown", (event) => cursorHighlight(event));
+
+document.querySelector("#easy").addEventListener("click", () => updateSudokuGrid("easy", showLines));
+document.querySelector("#medium").addEventListener("click", () => updateSudokuGrid("medium", showLines));
+document.querySelector("#hard").addEventListener("click", () => updateSudokuGrid("hard", showLines));
+document.querySelector("#very-hard").addEventListener("click", () => updateSudokuGrid("very-hard", showLines));
+
+document.querySelector("#clear").addEventListener("click", () => clearSudokuGrid(showLines));
+document.querySelector("#solve").addEventListener("click", () => solveSudokuGrid());
+document.querySelector(".toggle-lines").addEventListener("click", () => toggleLines());
+
+document.addEventListener("keydown", (event) => reactToKey(event, showLines));
 
 let originalSudokuGrid;
 let currentRow;
 let currentCol;
 
-function updateSudokuGrid(difficulty) {
+function updateSudokuGrid(difficulty, showLines) {
   createSudokuGridHTML(difficulty);
   resetSudoku(showLines);
   localStorage.setItem("sudokuDifficulty", difficulty);
 }
 
-function possible(y, x, n, grid) {
+function possible(x, y, n, grid) {
   for (let i = 0; i < 9; i++) {
     if (grid[y][i] === n || grid[i][x] === n) {
       return false;
@@ -58,7 +49,7 @@ function solveSudoku(grid) {
     for (let x = 0; x < 9; x++) {
       if (grid[y][x] === 0) {
         for (let n = 1; n <= 9; n++) {
-          if (possible(y, x, n, grid)) {
+          if (possible(x, y, n, grid)) {
             grid[y][x] = n;
             if (solveSudoku(grid)) {
               return true;
@@ -175,11 +166,7 @@ function clearColors() {
 }
 
 function highlightSimilar() {
-  let highlightedCellValue = document.querySelector(".highlight");
-
-  if (highlightedCellValue) {
-    highlightedCellValue = highlightedCellValue.textContent;
-  }
+  const highlightedCellValue = document.querySelector(".highlight").textContent;
 
   document.querySelectorAll(".cell").forEach((cell) => {
     cell.classList.remove("similar");
@@ -224,6 +211,10 @@ function clearSudokuGrid(showLines) {
 }
 
 function solveSudokuGrid() {
+  const highlightedCell = document.querySelector(".highlight");
+  if (!highlightedCell) {
+    return;
+  }
   const sudokuCells = document.querySelectorAll(".cell");
   document.querySelectorAll(".similar").forEach((cell) => {
     cell.classList.remove("similar");
@@ -231,7 +222,7 @@ function solveSudokuGrid() {
   document.querySelectorAll(".highlight-line").forEach((cell) => {
     cell.classList.remove("highlight-line");
   });
-  document.querySelector(".highlight").classList.remove("highlight");
+  highlightedCell.classList.remove("highlight");
 
   sudokuCells.forEach((cell) => {
     if (!cell.classList.contains("editable")) {
@@ -254,12 +245,59 @@ function solveSudokuGrid() {
       }
     });
   });
+  alreadySolved = true;
 }
 
-function cursorHighlight(event) {
-  const highlightedCell = document.querySelector(".highlight");
+function reactToKey(event, showLines) {
   const key = event.key;
+  const keyToDifficulty= {
+    a: "easy",
+    s: "medium",
+    d: "hard",
+    f: "very-hard",
+  };
 
+  if (key === "c") {
+    clearSudokuGrid(showLines);
+  } else if (key === "g") {
+    toggleLines();
+  } else if (["a", "s", "d", "f"].includes(key)) {
+    updateSudokuGrid(keyToDifficulty[key], showLines);
+  }
+
+  const highlightedCell = document.querySelector(".highlight");
+  if (!highlightedCell) {
+    return;
+  }
+
+  if (["h", "j", "k", "l"].includes(key) && highlightedCell) {
+    moveCursor(key, highlightedCell);
+    highlightSimilar();
+    if (showLines === "true") {
+      highlightLines();
+    }
+  } else if (key === "x" && highlightedCell.classList.contains("editable")) {
+    clearCellValue(highlightedCell);
+    highlightSimilar();
+  } else if (!isNaN(key) && key >= 1 && key <= 9 && highlightedCell.classList.contains("editable")) {
+    setCellValue(key, highlightedCell);
+    highlightSimilar();
+  } else if (key === "Enter") {
+    solveSudokuGrid();
+  }
+}
+
+function setCellValue(key, cell) {
+  cell.textContent = key;
+  cell.classList.add("edited");
+}
+
+function clearCellValue(cell) {
+  cell.textContent = "";
+  cell.classList.remove("edited");
+}
+
+function moveCursor(key, cell) {
   if (key === "h" && currentCol > 0) {
     currentCol--;
   } else if (key === "j" && currentRow < 8) {
@@ -268,26 +306,11 @@ function cursorHighlight(event) {
     currentRow--;
   } else if (key === "l" && currentCol < 8) {
     currentCol++;
-  } else if (
-    !isNaN(key) &&
-    key >= 1 &&
-    key <= 9 &&
-    highlightedCell.classList.contains("editable")
-  ) {
-    highlightedCell.textContent = key;
-    highlightedCell.classList.add("edited");
-  } else if (key === "x" && highlightedCell.classList.contains("editable")) {
-    highlightedCell.textContent = "";
-    highlightedCell.classList.remove("edited");
   }
 
   const newIndex = currentRow * 9 + currentCol;
-  highlightedCell.classList.remove("highlight");
+  cell.classList.remove("highlight");
   document.querySelectorAll(".cell")[newIndex].classList.add("highlight");
-  highlightSimilar();
-  if (showLines === "true") {
-    highlightLines();
-  }
 }
 
 function toggleLines() {
@@ -296,18 +319,17 @@ function toggleLines() {
 
   if (button.childNodes.length > 0) {
     showLines = "false";
-    toggleButtonCenter(showLines);
+    toggleButtonCenter(showLines, button);
     lines.forEach((line) => line.classList.remove("highlight-line"));
     localStorage.setItem("showLines", showLines);
   } else {
     showLines = "true";
-    toggleButtonCenter(showLines);
+    toggleButtonCenter(showLines, button);
     localStorage.setItem("showLines", showLines);
   }
 }
 
-function toggleButtonCenter(showLines) {
-  const button = document.querySelector(".box");
+function toggleButtonCenter(showLines, button = document.querySelector(".box")) {
   if (showLines === "true" && button.childNodes.length === 0) {
     const center = document.createElement("div");
     center.classList.add("box-center");
