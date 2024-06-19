@@ -1,7 +1,7 @@
 const lastDifficulty = localStorage.getItem("sudokuDifficulty") || "medium";
 let showLines = localStorage.getItem("showLines") || "true";
 
-window.addEventListener("load", () => updateSudokuGrid(lastDifficulty));
+window.addEventListener("load", () => updateSudokuGrid(lastDifficulty, showLines));
 
 document.querySelector("#easy").addEventListener("click", () => updateSudokuGrid("easy", showLines));
 document.querySelector("#medium").addEventListener("click", () => updateSudokuGrid("medium", showLines));
