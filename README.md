@@ -38,7 +38,7 @@ To toggle the grid lines, press **g**.
 
 ## Philosophy
 
-A Sudoku may have more than one solution because generating puzzles with only one solution would take too long. I wasn’t happy with that, so I changed it. Please don’t be too strict—speed is my top priority.
+A Sudoku may have more than one solution because generating puzzles with only one solution would take too long. I wasn’t happy with that, so I changed it. Please don’t be too strict. Speed is my top priority.
 
 ---
 
